@@ -6,16 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zjy.android.zwebsocket.header.Header;
+import zjy.android.zwebsocket.request.resolver.AccountResolver;
+import zjy.android.zwebsocket.request.resolver.ChainImpl;
+import zjy.android.zwebsocket.request.resolver.FragmentResolver;
+import zjy.android.zwebsocket.request.resolver.HostResolver;
+import zjy.android.zwebsocket.request.resolver.PathResolver;
+import zjy.android.zwebsocket.request.resolver.PortResolver;
+import zjy.android.zwebsocket.request.resolver.ProtocolResolver;
+import zjy.android.zwebsocket.request.resolver.QueryParamsResolver;
+import zjy.android.zwebsocket.request.resolver.Resolver;
 
 public class Request {
 
     private String url;
     private long pingIntervalMill;
+    private String username;
+    private String password;
     private String host;
     private int port;
+    private List<String> pathSegments;
+    private List<String> queryParams;
+    private String fragment;
     private List<Header> headers;
 
-    private Request() {}
+    private Request() {
+    }
 
     public long getPingIntervalMill() {
         return pingIntervalMill;
@@ -25,16 +40,95 @@ public class Request {
         return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getHost() {
         return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public int getPort() {
         return port;
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public List<String> getPathSegments() {
+        return pathSegments;
+    }
+
+    public void setPathSegments(List<String> pathSegments) {
+        this.pathSegments = pathSegments;
+    }
+
+    public String getPath() {
+        if (pathSegments == null) return "/";
+        StringBuilder builder = new StringBuilder();
+        for (String path : pathSegments) {
+            builder.append('/').append(path);
+        }
+        return builder.toString();
+    }
+
+    public List<String> getQueryParams() {
+        return queryParams;
+    }
+
+    public void setQueryParams(List<String> queryParams) {
+        this.queryParams = queryParams;
+    }
+
+    public String getFragment() {
+        return fragment;
+    }
+
+    public void setFragment(String fragment) {
+        this.fragment = fragment;
+    }
+
     public List<Header> getHeaders() {
         return headers;
+    }
+
+    private void resolveUrl(String url) {
+        if (url.startsWith("ws:")) {
+            url = "http" + url.substring(2);
+        } else if (url.startsWith("wss:")) {
+            url = "https" + url.substring(3);
+        }
+        List<Resolver> resolverList = new ArrayList<>();
+        resolverList.add(new ProtocolResolver());
+        resolverList.add(new AccountResolver());
+        resolverList.add(new HostResolver());
+        resolverList.add(new PortResolver());
+        resolverList.add(new PathResolver());
+        resolverList.add(new QueryParamsResolver());
+        resolverList.add(new FragmentResolver());
+        Resolver.Chain chain = new ChainImpl(this, url, resolverList);
+        chain.proceed();
     }
 
     public static class Builder {
@@ -87,34 +181,7 @@ public class Request {
                 request.host = host;
                 request.port = port;
             } else {
-                if (url.startsWith("ws:")) {
-                    url = "http" + url.substring(2);
-                } else if (url.startsWith("wss:")) {
-                    url = "https" + url.substring(3);
-                }
-                request.url = url;
-                int pos = 0;
-                if (url.startsWith("http:")) {
-                    pos = 7;
-                    request.port = 80;
-                } else if (url.startsWith("https:")) {
-                    pos = 8;
-                    request.port = 443;
-                }
-                int end = url.substring(pos).indexOf(":");
-                if (end == -1) {
-                    request.host = url.substring(pos);
-                } else {
-                    request.host = url.substring(pos, end);
-                    StringBuilder builder = new StringBuilder();
-                    for (char c : url.substring(end + 1).toCharArray()) {
-                        if (c == '?' || c == '#' || c == '@' || c == '&') {
-                            break;
-                        }
-                        builder.append(c);
-                    }
-                    request.port = Integer.parseInt(builder.toString());
-                }
+                request.resolveUrl(url);
             }
             return request;
         }

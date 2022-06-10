@@ -50,7 +50,7 @@ public class WebSocketCall {
 
     private byte[] requestHeader(Request request) {
         StringBuilder builder = new StringBuilder();
-        builder.append("GET / HTTP/1.1").append("\r\n")
+        builder.append("GET ").append(request.getPath()).append(" HTTP/1.1").append("\r\n")
                 .append("Upgrade: websocket").append("\r\n")
                 .append("Connection: Upgrade").append("\r\n")
                 .append("Sec-WebSocket-Key: ").append(key).append("\r\n")

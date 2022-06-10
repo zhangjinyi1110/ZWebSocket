@@ -1,0 +1,9 @@
+syntax = "proto3";
+//生成的java类所在的包名
+package zjy.android.websocketapp;
+
+//登录请求结构体
+message DanMu {
+  string cmd = 1;
+  string data = 2;
+}

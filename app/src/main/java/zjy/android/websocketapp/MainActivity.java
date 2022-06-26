@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("uid", 0);
-                map.put("roomid", 13550856);
+                map.put("roomid", 25143941);
                 map.put("protover", 1);
                 map.put("platform", "android");
                 map.put("clientver", "1.4.0");
@@ -180,6 +180,10 @@ public class MainActivity extends AppCompatActivity {
                                                 Log.e("TAG", "onRead1: COMBO_SEND " + map);
                                             } else if ("SEND_GIFT".equals(cmd)) {
                                                 Log.e("TAG", "onRead2: COMBO_SEND " + map);
+                                                Map<String, Object> combo = (Map<String, Object>) map.get("data");
+                                                if ("gold".equals(combo.get("coin_type"))) {
+                                                    Log.e("TAG", "onRead3: " + combo);
+                                                }
                                             }
                                         }
                                     }

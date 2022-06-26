@@ -19,6 +19,8 @@ import static zjy.android.zwebsocket.Contract.PAYLOAD_LONG;
 import static zjy.android.zwebsocket.Contract.PAYLOAD_SHORT;
 import static zjy.android.zwebsocket.Contract.PAYLOAD_SHORT_MAX;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -53,11 +55,26 @@ public class Reader {
     }
 
     private void readNextFrame() throws IOException {
-        readHeader();
+        try {
+            readHeader();
+        } catch (IOException e) {
+            Log.e("TAG", "readNextFrame: " + 5000);
+            throw new IOException("5000");
+        }
         if (isControllerFrame) {
-            readControl();
+            try {
+                readControl();
+            } catch (IOException e) {
+                Log.e("TAG", "readNextFrame: " + 5100);
+                throw new IOException("5100");
+            }
         } else {
-            readMessage();
+            try {
+                readMessage();
+            } catch (IOException e) {
+                Log.e("TAG", "readNextFrame: " + 5202);
+                throw new IOException("5200");
+            }
         }
     }
 

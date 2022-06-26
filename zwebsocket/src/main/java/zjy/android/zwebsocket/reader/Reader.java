@@ -32,7 +32,7 @@ import okio.Okio;
 
 public class Reader {
 
-    private final BufferedSource source;
+    private BufferedSource source;
     private final FrameCallback frameCallback;
 
     private boolean isControllerFrame;
@@ -42,9 +42,12 @@ public class Reader {
     private final Buffer messageBuffer = new Buffer();
     private final Buffer controlBuffer = new Buffer();
 
+    private final InputStream inputStream;
+
     private boolean close = false;
 
     public Reader(InputStream inputStream, FrameCallback frameCallback) {
+        this.inputStream = inputStream;
         this.source = Okio.buffer(Okio.source(inputStream));
         this.frameCallback = frameCallback;
     }
@@ -60,10 +63,13 @@ public class Reader {
             Log.e("TAG", "readNextFrame: 1");
             readHeader();
         } catch (IOException e) {
-            if ("5101".equals(e.getMessage())) {
-                Log.e("TAG", "readNextFrame: " + 5101);
-                return;
-            }
+//            if ("5101".equals(e.getMessage())) {
+//                Log.e("TAG", "readNextFrame: " + 5101);
+//                BufferedSource temp = source;
+//                source = Okio.buffer(Okio.source(inputStream));
+//                temp.close();
+//                return;
+//            }
             Log.e("TAG", "readNextFrame: " + 5000);
             throw new IOException("5000");
         }

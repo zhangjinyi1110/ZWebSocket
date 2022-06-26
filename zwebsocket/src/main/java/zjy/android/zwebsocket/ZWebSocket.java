@@ -99,15 +99,19 @@ public class ZWebSocket implements WebSocket, Reader.FrameCallback {
         changedConnectState(2, code, reason);
         writer.writeCloseFrame(code, ByteString.encodeUtf8(reason));
         clientClose = true;
-        Timeout.timeout(1000, 10000, () -> {
-            try {
-                close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                changedConnectState(4, 4005, "server close timeout");
-            }
-        });
+        if (code == 4002) {
+            close();
+        } else {
+            Timeout.timeout(1000, 10000, () -> {
+                try {
+                    close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    changedConnectState(4, 4005, "server close timeout");
+                }
+            });
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import okio.Buffer;
 import okio.BufferedSource;
@@ -136,7 +137,14 @@ public class Reader {
         if (close) throw new IOException("reader closed");
 
         Log.e("TAG", "readHeader1: b0");
-        int b0 = source.readByte();
+        int b0;
+        try {
+            b0 = source.readByte();
+        } catch (IOException e) {
+            Log.e("TAG", "readHeader: " + e);
+            Log.e("TAG", "readHeader: " + Arrays.toString(source.readByteArray()));
+            throw new IOException("5101");
+        }
         Log.e("TAG", "readHeader2: b0 = " + b0);
         isFinalFrame = (b0 & B0_FLAG_FIN) != 0;
         Log.e("TAG", "readHeader3: isFinalFrame = " + isFinalFrame);

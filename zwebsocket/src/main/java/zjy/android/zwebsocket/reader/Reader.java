@@ -135,38 +135,53 @@ public class Reader {
     private synchronized void readHeader() throws IOException {
         if (close) throw new IOException("reader closed");
 
-        Log.e("TAG", "readHeader: b0");
+        Log.e("TAG", "readHeader1: b0");
         int b0 = source.readByte();
+        Log.e("TAG", "readHeader2: b0 = " + b0);
         isFinalFrame = (b0 & B0_FLAG_FIN) != 0;
+        Log.e("TAG", "readHeader3: isFinalFrame = " + isFinalFrame);
         isControllerFrame = (b0 & OPCODE_FLAG_CONTROL) != 0;
+        Log.e("TAG", "readHeader4: isControllerFrame = " + isControllerFrame);
         if (isControllerFrame && !isFinalFrame) {
             throw new IOException("control frame must be final");
         }
+        Log.e("TAG", "readHeader5: b0");
         boolean rsv1 = (b0 & B0_FLAG_RSV1) != 0;
+        Log.e("TAG", "readHeader6: rsv1 = " + rsv1);
         boolean rsv2 = (b0 & B0_FLAG_RSV2) != 0;
+        Log.e("TAG", "readHeader7: rsv2 = " + rsv2);
         boolean rsv3 = (b0 & B0_FLAG_RSV3) != 0;
+        Log.e("TAG", "readHeader8: rsv3 = " + rsv3);
         if (rsv1 || rsv2 || rsv3) {
             throw new IOException("rsv is not enabled, rsv1 = " + rsv1 + ", rsv2 = " + rsv2 + ", " +
                     "rsv3 = " + rsv3);
         }
+        Log.e("TAG", "readHeader9: b0");
         opcode = b0 & B0_OPCODE;
+        Log.e("TAG", "readHeader10: opcode = " + opcode);
 
-        Log.e("TAG", "readHeader: b1");
+        Log.e("TAG", "readHeader1: b1");
         int b1 = source.readByte();
+        Log.e("TAG", "readHeader2: b1 = " + b1);
         boolean isMark = (b1 & B1_FLAG_MASK) != 0;
+        Log.e("TAG", "readHeader3: isMark = " + isMark);
         if (isMark) {
             throw new IOException("service is not have mark");
         }
+        Log.e("TAG", "readHeader4: b1");
         frameLength = b1 & B1_PAYLOAD_LENGTH;
+        Log.e("TAG", "readHeader5: b1");
         if (frameLength == PAYLOAD_SHORT) {
             frameLength = source.readShort() & PAYLOAD_SHORT_MAX;
         } else if (frameLength == PAYLOAD_LONG) {
             frameLength = source.readLong();
         }
+        Log.e("TAG", "readHeader6: frameLength = " +  frameLength);
 
         if (isControllerFrame && frameLength > PAYLOAD_BYTE_MAX) {
             throw new IOException("control frame len must be less then 125B");
         }
+        Log.e("TAG", "readHeader7: b1 finial");
     }
 
     public synchronized void close() throws IOException {

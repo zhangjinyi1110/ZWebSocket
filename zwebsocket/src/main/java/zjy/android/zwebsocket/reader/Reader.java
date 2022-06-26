@@ -147,11 +147,12 @@ public class Reader {
         try {
             b0 = source.readByte();
         } catch (IOException e) {
-            if (source.readByteArray().length == 0) {
-                throw new IOException("5101");
-            } else {
-                throw new IOException("5102");
-            }
+            throw new IOException("5101");
+//            if (source.readByteArray().length == 0) {
+//                throw new IOException("5101");
+//            } else {
+//                throw new IOException("5102");
+//            }
         }
         Log.e("TAG", "readHeader2: b0 = " + b0);
         isFinalFrame = (b0 & B0_FLAG_FIN) != 0;

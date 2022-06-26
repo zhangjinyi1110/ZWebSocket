@@ -60,7 +60,7 @@ public class Reader {
             Log.e("TAG", "readNextFrame: 1");
             readHeader();
         } catch (IOException e) {
-            if ("5101".equals(e.toString())) {
+            if ("5101".equals(e.getMessage())) {
                 Log.e("TAG", "readNextFrame: " + 5101);
                 return;
             }

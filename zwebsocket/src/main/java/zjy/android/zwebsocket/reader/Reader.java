@@ -60,6 +60,10 @@ public class Reader {
             Log.e("TAG", "readNextFrame: 1");
             readHeader();
         } catch (IOException e) {
+            if ("5101".equals(e.toString())) {
+                Log.e("TAG", "readNextFrame: " + 5101);
+                return;
+            }
             Log.e("TAG", "readNextFrame: " + 5000);
             throw new IOException("5000");
         }
@@ -143,9 +147,11 @@ public class Reader {
         try {
             b0 = source.readByte();
         } catch (IOException e) {
-            Log.e("TAG", "readHeader: " + e);
-            Log.e("TAG", "readHeader: " + Arrays.toString(source.readByteArray()));
-            throw new IOException("5101");
+            if (source.readByteArray().length == 0) {
+                throw new IOException("5101");
+            } else {
+                throw new IOException("5102");
+            }
         }
         Log.e("TAG", "readHeader2: b0 = " + b0);
         isFinalFrame = (b0 & B0_FLAG_FIN) != 0;

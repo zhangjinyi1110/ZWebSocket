@@ -135,6 +135,7 @@ public class Reader {
     private synchronized void readHeader() throws IOException {
         if (close) throw new IOException("reader closed");
 
+        Log.e("TAG", "readHeader: b0");
         int b0 = source.readByte();
         isFinalFrame = (b0 & B0_FLAG_FIN) != 0;
         isControllerFrame = (b0 & OPCODE_FLAG_CONTROL) != 0;
@@ -150,6 +151,7 @@ public class Reader {
         }
         opcode = b0 & B0_OPCODE;
 
+        Log.e("TAG", "readHeader: b1");
         int b1 = source.readByte();
         boolean isMark = (b1 & B1_FLAG_MASK) != 0;
         if (isMark) {

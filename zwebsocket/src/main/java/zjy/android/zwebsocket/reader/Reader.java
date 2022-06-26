@@ -57,6 +57,7 @@ public class Reader {
 
     private void readNextFrame() throws IOException {
         try {
+            Log.e("TAG", "readNextFrame: 1");
             readHeader();
         } catch (IOException e) {
             Log.e("TAG", "readNextFrame: " + 5000);
@@ -94,6 +95,7 @@ public class Reader {
                 messageBuffer.write(source, frameLength);
             if (isFinalFrame) break;
             while (!close) {
+                Log.e("TAG", "readMessage: 2");
                 readHeader();
                 if (!isControllerFrame) {
                     break;
